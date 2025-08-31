@@ -1,0 +1,7 @@
+{
+  "app_name": "Cilibit",
+  "version": "2.0.0",
+  "backend": "Flask + JSON",
+  "created": "2025-06-23"
+}
+

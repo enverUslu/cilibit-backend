@@ -1,0 +1,18 @@
+[Unit]
+Description=Cilibit Backend API Server
+After=network.target
+
+[Service]
+Type=simple
+User=enver
+WorkingDirectory=/home/enver/cilibit/backend
+Environment=DEBUG=False
+Environment=HOST=0.0.0.0
+Environment=PORT=5000
+Environment=CORS_ORIGINS=https://cilibitbyenver.vercel.app
+ExecStart=/home/enver/cilibit/backend/venv/bin/python /home/enver/cilibit/backend/src/main.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
