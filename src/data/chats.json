@@ -1,0 +1,29 @@
+[
+  {
+    "id": "1759669209012",
+    "participants": [
+      "enver",
+      "irem"
+    ],
+    "createdAt": 1759669209012,
+    "lastActivity": 1759998821583
+  },
+  {
+    "id": "1759670645706",
+    "participants": [
+      "enver",
+      "test"
+    ],
+    "createdAt": 1759670645706,
+    "lastActivity": 1759670645706
+  },
+  {
+    "id": "1759957743092",
+    "participants": [
+      "enver",
+      "testuser"
+    ],
+    "createdAt": 1759957743092,
+    "lastActivity": 1759957743092
+  }
+]

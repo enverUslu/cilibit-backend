@@ -1,0 +1,132 @@
+[
+  {
+    "id": "1759959461987",
+    "chatId": "1759669209012",
+    "sender": "enver",
+    "content": "heyy",
+    "timestamp": 1759959461987,
+    "isRead": true,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1759960917402",
+    "chatId": "1759669209012",
+    "sender": "enver",
+    "content": "OZEL MESAJ",
+    "timestamp": 1759960917402,
+    "isRead": true,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1759998349769",
+    "chatId": "1759669209012",
+    "sender": "enver",
+    "content": "yellow",
+    "timestamp": 1759998349769,
+    "isRead": true,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1759998419334",
+    "chatId": "1759669209012",
+    "sender": "irem",
+    "content": "HEYYYOOO",
+    "timestamp": 1759998419334,
+    "isRead": true,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1759998433204",
+    "chatId": "1759669209012",
+    "sender": "enver",
+    "content": "HEYEYYYY",
+    "timestamp": 1759998433204,
+    "isRead": true,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1759998494776",
+    "chatId": "1759669209012",
+    "sender": "enver",
+    "content": "i i follow",
+    "timestamp": 1759998494776,
+    "isRead": true,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1759998499621",
+    "chatId": "1759669209012",
+    "sender": "enver",
+    "content": "i follo u",
+    "timestamp": 1759998499621,
+    "isRead": true,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1759998512643",
+    "chatId": "1759669209012",
+    "sender": "enver",
+    "content": "📷 Fotoğraf",
+    "timestamp": 1759998512643,
+    "isRead": true,
+    "type": "image",
+    "image": "https://api.enverelectronics.com/api/image/cilibits/47507aaec8094aa28b967da20616d714.jpeg"
+  },
+  {
+    "id": "1759998544358",
+    "chatId": "1759669209012",
+    "sender": "enver",
+    "content": "-",
+    "timestamp": 1759998544358,
+    "isRead": false,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1759998545952",
+    "chatId": "1759669209012",
+    "sender": "irem",
+    "content": "OWJDWOJDWOSJSK",
+    "timestamp": 1759998545952,
+    "isRead": true,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1759998566210",
+    "chatId": "1759669209012",
+    "sender": "enver",
+    "content": "USBDEJDBWNDBE",
+    "timestamp": 1759998566210,
+    "isRead": false,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1759998582811",
+    "chatId": "1759669209012",
+    "sender": "irem",
+    "content": "tarih",
+    "timestamp": 1759998582811,
+    "isRead": true,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1759998821583",
+    "chatId": "1759669209012",
+    "sender": "enver",
+    "content": "tarih yazdi kiz...",
+    "timestamp": 1759998821583,
+    "isRead": false,
+    "type": "text",
+    "image": ""
+  }
+]
