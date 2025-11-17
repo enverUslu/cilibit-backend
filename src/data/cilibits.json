@@ -34,7 +34,9 @@
     "image": null,
     "isGif": false,
     "isCulubut": false,
-    "likes": [],
+    "likes": [
+      "enver"
+    ],
     "dislikes": []
   },
   {
@@ -47,7 +49,8 @@
     "isGif": false,
     "isCulubut": true,
     "likes": [
-      "enver"
+      "enver",
+      "irem"
     ],
     "dislikes": []
   },
@@ -137,6 +140,260 @@
     "likes": [
       "enver",
       "irem"
+    ],
+    "dislikes": []
+  },
+  {
+    "id": "1760009544784",
+    "content": "chaos engine'i hala dinliorum",
+    "timestamp": 1760009544784,
+    "author": "enver",
+    "parentId": "1759932823570",
+    "image": null,
+    "isGif": false,
+    "isCulubut": false,
+    "likes": [],
+    "dislikes": []
+  },
+  {
+    "id": "1760161329756",
+    "content": "cocuk askindan delirdi usta",
+    "timestamp": 1760161329756,
+    "author": "enver",
+    "parentId": null,
+    "image": null,
+    "isGif": false,
+    "isCulubut": false,
+    "likes": [
+      "irem"
+    ],
+    "dislikes": []
+  },
+  {
+    "id": "1760392124952",
+    "content": "catan\ncata tatan!",
+    "timestamp": 1760392124952,
+    "author": "irem",
+    "parentId": null,
+    "image": "https://media1.tenor.com/m/5nSKlBlwdkIAAAAC/cat.gif",
+    "isGif": true,
+    "isCulubut": false,
+    "likes": [],
+    "dislikes": []
+  },
+  {
+    "id": "1760514557181",
+    "content": "bugun ODTU'lu oluorum..........!!!",
+    "timestamp": 1760514557181,
+    "author": "enver",
+    "parentId": null,
+    "image": null,
+    "isGif": false,
+    "isCulubut": false,
+    "likes": [
+      "irem"
+    ],
+    "dislikes": []
+  },
+  {
+    "id": "1760599120827",
+    "content": "afffferin sana askim benim",
+    "timestamp": 1760599120827,
+    "author": "irem",
+    "parentId": "1760514557181",
+    "image": null,
+    "isGif": false,
+    "isCulubut": false,
+    "likes": [],
+    "dislikes": []
+  },
+  {
+    "id": "1760599220812",
+    "content": "https://spotify.link/Zv8mMfitvXb",
+    "timestamp": 1760599220812,
+    "author": "irem",
+    "parentId": null,
+    "image": null,
+    "isGif": false,
+    "isCulubut": false,
+    "likes": [],
+    "dislikes": []
+  },
+  {
+    "id": "1760884853339",
+    "content": "#istibdada",
+    "timestamp": 1760884853339,
+    "author": "enver",
+    "parentId": null,
+    "image": null,
+    "isGif": false,
+    "isCulubut": false,
+    "likes": [
+      "irem"
+    ],
+    "dislikes": []
+  },
+  {
+    "id": "1761067275640",
+    "content": "HELP",
+    "timestamp": 1761067275640,
+    "author": "irem",
+    "parentId": "1760884853339",
+    "image": null,
+    "isGif": false,
+    "isCulubut": false,
+    "likes": [],
+    "dislikes": []
+  },
+  {
+    "id": "1761067529090",
+    "content": "o zaman ben de her yere iserim",
+    "timestamp": 1761067529090,
+    "author": "irem",
+    "parentId": null,
+    "image": "https://api.enverelectronics.com/api/image/cilibits/1f36f2db983940c88d4b50c8e36df12e.jpeg",
+    "isGif": false,
+    "isCulubut": false,
+    "likes": [],
+    "dislikes": []
+  },
+  {
+    "id": "1761067545669",
+    "content": "lan bunu atiyo digerini niye atmadi",
+    "timestamp": 1761067545669,
+    "author": "irem",
+    "parentId": "1761067529090",
+    "image": null,
+    "isGif": false,
+    "isCulubut": false,
+    "likes": [],
+    "dislikes": []
+  },
+  {
+    "id": "1761070949601",
+    "content": "🫵",
+    "timestamp": 1761070949601,
+    "author": "irem",
+    "parentId": null,
+    "image": "https://api.enverelectronics.com/api/image/cilibits/4d1a3718e7214a118b607aec523595cb.jpeg",
+    "isGif": false,
+    "isCulubut": false,
+    "likes": [
+      "enver"
+    ],
+    "dislikes": []
+  },
+  {
+    "id": "1761759458013",
+    "content": "ooOOOOOoooffya",
+    "timestamp": 1761759458013,
+    "author": "irem",
+    "parentId": null,
+    "image": null,
+    "isGif": false,
+    "isCulubut": false,
+    "likes": [],
+    "dislikes": []
+  },
+  {
+    "id": "1761760374045",
+    "content": "yeni bir culubut olusturdu!",
+    "timestamp": 1761760374045,
+    "author": "irem",
+    "parentId": null,
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAEKADAAQAAAABAAAAEAAAAAA0VXHyAAAA4klEQVQ4EaVSuw3CMBC1UVoqFsgoqWhYg44VKCKUFdIxBunTsYZFn4oBDM/Sc06+c5qcZN/3vbtz4q/jEt0OOezAJqgieN5ODqeUWlwRABhjNElKUvgmQVmI7iC1pLGCiAHgva+lc1wR/L9KAoJAdgUZcqVsrsAJqAm+X740t9+AE1BnlDDUCshxDVGXx5fdkTdXwKt3XZcPCvlvtG3rhumIUBKTgEnoeZ5d3/cpBJIQQrJ5qRXYHQUSDB+rDROsVZrP8l49YUkwbIhVqyZAIQEcHbGaqDc4P16OByDYUidHXD81GVZbbVID5gAAAABJRU5ErkJggg==",
+    "isGif": false,
+    "isCulubut": true,
+    "likes": [
+      "enver"
+    ],
+    "dislikes": []
+  },
+  {
+    "id": "1761760694778",
+    "content": "yeni bir culubut olusturdu!",
+    "timestamp": 1761760694778,
+    "author": "irem",
+    "parentId": null,
+    "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAEKADAAQAAAABAAAAEAAAAAA0VXHyAAAAv0lEQVQ4EY1SMRICMQgMjt19yNLSN9k4NvcmS0s/dDVmzYBAQC8NsOzucSTE/ORmDtG5dcwgI63wg2UOEjdEeyocHGcgIuaviYilF2NqEEm/6mPVHFNQ34db0UR3E2B5RKQkKwaeLdcZqLInYiTR9mxO8RrRvIdbAHZLrhZ4OkEkxxpCOalBnCDWIkacDCpyhU8G1n1P7gyqr4hR1qfHunxeyuu6Ce9vPK2LcvQlWhDdSzfs5hpVERL3C6G3q3wDhX9Bt/iwi5UAAAAASUVORK5CYII=",
+    "isGif": false,
+    "isCulubut": true,
+    "likes": [],
+    "dislikes": []
+  },
+  {
+    "id": "1761760709717",
+    "content": "cok ucube oldulqr yaOWNDOWJDKS",
+    "timestamp": 1761760709717,
+    "author": "irem",
+    "parentId": null,
+    "image": null,
+    "isGif": false,
+    "isCulubut": false,
+    "likes": [],
+    "dislikes": []
+  },
+  {
+    "id": "1761760937799",
+    "content": "SHAAAAAAA",
+    "timestamp": 1761760937799,
+    "author": "enver",
+    "parentId": "1761760694778",
+    "image": null,
+    "isGif": false,
+    "isCulubut": false,
+    "likes": [],
+    "dislikes": []
+  },
+  {
+    "id": "1761901443341",
+    "content": "yine uyuya kaldim ve akabinde hayat bitti #bitti",
+    "timestamp": 1761901443341,
+    "author": "enver",
+    "parentId": null,
+    "image": null,
+    "isGif": false,
+    "isCulubut": false,
+    "likes": [
+      "irem"
+    ],
+    "dislikes": []
+  },
+  {
+    "id": "1762285714531",
+    "content": "https://open.spotify.com/track/1Z4bpgy49F5P9mQrp29OVK?si=CRK_wEA8RCGnU_JONhCVnA&context=spotify%3Aartist%3A7oHJbmt1VAj16Tm6nJpSqr",
+    "timestamp": 1762285714531,
+    "author": "irem",
+    "parentId": null,
+    "image": null,
+    "isGif": false,
+    "isCulubut": false,
+    "likes": [],
+    "dislikes": []
+  },
+  {
+    "id": "1762285773829",
+    "content": "#nailed_it!",
+    "timestamp": 1762285773829,
+    "author": "irem",
+    "parentId": "1761901443341",
+    "image": null,
+    "isGif": false,
+    "isCulubut": false,
+    "likes": [],
+    "dislikes": []
+  },
+  {
+    "id": "1762285881623",
+    "content": "senicokozluom haberin olsun tm mi #aklimdancikarmisinderscalisamiyorum",
+    "timestamp": 1762285881623,
+    "author": "irem",
+    "parentId": null,
+    "image": null,
+    "isGif": false,
+    "isCulubut": false,
+    "likes": [
+      "enver"
     ],
     "dislikes": []
   }

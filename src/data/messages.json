@@ -85,7 +85,7 @@
     "sender": "enver",
     "content": "-",
     "timestamp": 1759998544358,
-    "isRead": false,
+    "isRead": true,
     "type": "text",
     "image": ""
   },
@@ -105,7 +105,7 @@
     "sender": "enver",
     "content": "USBDEJDBWNDBE",
     "timestamp": 1759998566210,
-    "isRead": false,
+    "isRead": true,
     "type": "text",
     "image": ""
   },
@@ -125,7 +125,167 @@
     "sender": "enver",
     "content": "tarih yazdi kiz...",
     "timestamp": 1759998821583,
-    "isRead": false,
+    "isRead": true,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1760036495695",
+    "chatId": "1759669209012",
+    "sender": "irem",
+    "content": "😎😎😎",
+    "timestamp": 1760036495695,
+    "isRead": true,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1760036504062",
+    "chatId": "1759669209012",
+    "sender": "irem",
+    "content": "selam ya",
+    "timestamp": 1760036504062,
+    "isRead": true,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1760045046623",
+    "chatId": "1759669209012",
+    "sender": "enver",
+    "content": "bi saniye yanimda kiz arkadasim var sonra yaziyim.  env",
+    "timestamp": 1760045046623,
+    "isRead": true,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1760045088025",
+    "chatId": "1759669209012",
+    "sender": "irem",
+    "content": "inanamiorm",
+    "timestamp": 1760045088025,
+    "isRead": true,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1760045093906",
+    "chatId": "1759669209012",
+    "sender": "irem",
+    "content": "butun erkejler mi ayni olur",
+    "timestamp": 1760045093906,
+    "isRead": true,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1760045117100",
+    "chatId": "1759669209012",
+    "sender": "enver",
+    "content": "evet ya.",
+    "timestamp": 1760045117100,
+    "isRead": true,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1760082525655",
+    "chatId": "1759669209012",
+    "sender": "irem",
+    "content": "slm.",
+    "timestamp": 1760082525655,
+    "isRead": true,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1760082534342",
+    "chatId": "1759669209012",
+    "sender": "irem",
+    "content": "kiz arkadasin hala yaninda mi??",
+    "timestamp": 1760082534342,
+    "isRead": true,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1760161116704",
+    "chatId": "1759669209012",
+    "sender": "enver",
+    "content": "yok degil selam",
+    "timestamp": 1760161116704,
+    "isRead": true,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1760599151722",
+    "chatId": "1759669209012",
+    "sender": "irem",
+    "content": "biz",
+    "timestamp": 1760599151722,
+    "isRead": true,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1760599158028",
+    "chatId": "1759669209012",
+    "sender": "irem",
+    "content": "of fotoyu atmadi ya",
+    "timestamp": 1760599158028,
+    "isRead": true,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1760599161082",
+    "chatId": "1759669209012",
+    "sender": "irem",
+    "content": ":(",
+    "timestamp": 1760599161082,
+    "isRead": true,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1760884842415",
+    "chatId": "1759669209012",
+    "sender": "enver",
+    "content": ":( halletcem",
+    "timestamp": 1760884842415,
+    "isRead": true,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1761067295845",
+    "chatId": "1759669209012",
+    "sender": "irem",
+    "content": "tmmm",
+    "timestamp": 1761067295845,
+    "isRead": true,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1761759431491",
+    "chatId": "1759669209012",
+    "sender": "irem",
+    "content": "oooffya",
+    "timestamp": 1761759431491,
+    "isRead": true,
+    "type": "text",
+    "image": ""
+  },
+  {
+    "id": "1761760523191",
+    "chatId": "1759669209012",
+    "sender": "enver",
+    "content": "offff ua",
+    "timestamp": 1761760523191,
+    "isRead": true,
     "type": "text",
     "image": ""
   }

@@ -241,14 +241,13 @@ def get_user_chats():
                 }
                 
                 # Find user details
-                for user in users:
-                    if user['username'] == other_participant:
-                        other_user_profile = {
-                            'username': user['username'],
-                            'nickname': user.get('displayName', user['username']),
-                            'profilePicture': user.get('profilePicture', '')
-                        }
-                        break
+                if other_participant in users:
+                    user_data = users[other_participant]
+                    other_user_profile = {
+                        'username': other_participant,
+                        'nickname': user_data.get('nickname', other_participant),
+                        'profilePicture': user_data.get('profilePicture', '')
+                    }
                 
                 simple_chat = {
                     'id': chat['id'],
@@ -502,7 +501,7 @@ def get_cilibits():
         return jsonify({
             'success': True,
             'topLevelCilibits': top_level_cilibits,
-            'cilibits': top_level_cilibits,
+            'cilibits': cilibits,
             'pagination': {
                 'currentPage': 1,
                 'totalPages': 1,
@@ -1208,6 +1207,56 @@ def get_image(filename):
     except Exception as e:
         print(f"Error serving image {filename}: {e}")
         return jsonify({'error': 'Image serving error'}), 500
+
+@app.route('/api/akademik-progress', methods=['GET'])
+def get_akademik_progress():
+    """Get akademik manita progress entries"""
+    try:
+        progress_file = os.path.join(DATA_DIR, 'akademik_progress.json')
+        
+        if os.path.exists(progress_file):
+            with open(progress_file, 'r', encoding='utf-8') as f:
+                progress_data = json.load(f)
+        else:
+            progress_data = []
+        
+        return jsonify({
+            'success': True,
+            'entries': progress_data
+        })
+        
+    except Exception as e:
+        print(f"Error loading akademik progress: {e}")
+        return jsonify({'success': False, 'error': 'Failed to load progress'}), 500
+
+@app.route('/api/akademik-progress', methods=['POST'])
+def update_akademik_progress():
+    """Update akademik manita progress entries (enver only)"""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'success': False, 'error': 'No data provided'}), 400
+        
+        # Check if user is enver (basic auth check)
+        username = data.get('username')
+        if username != 'enver':
+            return jsonify({'success': False, 'error': 'Unauthorized - only enver can edit'}), 403
+        
+        entries = data.get('entries', [])
+        progress_file = os.path.join(DATA_DIR, 'akademik_progress.json')
+        
+        # Save entries to file
+        with open(progress_file, 'w', encoding='utf-8') as f:
+            json.dump(entries, f, ensure_ascii=False, indent=2)
+        
+        return jsonify({
+            'success': True,
+            'message': 'Progress updated successfully'
+        })
+        
+    except Exception as e:
+        print(f"Error updating akademik progress: {e}")
+        return jsonify({'success': False, 'error': 'Failed to update progress'}), 500
 
 if __name__ == '__main__':
     # Get configuration from environment variables
