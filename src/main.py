@@ -4,7 +4,7 @@ import json
 import uuid
 from datetime import datetime
 from werkzeug.utils import secure_filename
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify, send_from_directory, session, redirect, url_for
 from flask_cors import CORS
 
 # DON'T CHANGE THIS !!!
@@ -12,10 +12,54 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
 app.config['SECRET_KEY'] = 'asdf#FGSgvasgf$5$WGT'
+# Allow up to 100MB uploads for large GIF files
+app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB
 
 # Enable CORS for all routes
 cors_origins = os.getenv('CORS_ORIGINS', '*').split(',') if os.getenv('CORS_ORIGINS') else ['*']
-CORS(app, origins=cors_origins)
+CORS(app, 
+     origins=cors_origins,
+     methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+     allow_headers=['Content-Type', 'Authorization', 'Cache-Control'],
+     supports_credentials=True)
+
+# Admin login credentials (static)
+ADMIN_USERNAME = "admin00"
+ADMIN_PASSWORD = "Maytap12!"
+
+
+def is_logged_in():
+    return session.get("admin_logged_in") is True
+
+
+def require_login():
+    if not is_logged_in():
+        return redirect(url_for("login"))
+    return None
+
+
+def require_api_login():
+    if not is_logged_in():
+        return jsonify({"success": False, "error": "Authentication required"}), 401
+    return None
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = (request.form.get('username') or '').strip()
+        password = request.form.get('password') or ''
+        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+            session["admin_logged_in"] = True
+            return redirect(url_for("serve", path=""))
+        return send_from_directory(app.static_folder, 'login.html')
+    return send_from_directory(app.static_folder, 'login.html')
+
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
 
 # Data directory
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
@@ -163,6 +207,9 @@ def frontend_test():
 @app.route('/users', methods=['GET'])  # Add both routes for compatibility
 def get_users():
     """Get all users"""
+    auth = require_api_login()
+    if auth:
+        return auth
     try:
         users = load_users()
         
@@ -485,10 +532,14 @@ def delete_message(chat_id, message_id):
 
 @app.route('/api/cilibits', methods=['GET'])
 def get_cilibits():
-    """Get all cilibits"""
+    """Get paginated cilibits"""
     try:
         # Ensure migration on first load
         migrate_cilibits_add_likes()
+        
+        # Get pagination parameters
+        page = int(request.args.get('page', 1))
+        limit = int(request.args.get('limit', 5))  # Default 5 per page
         
         cilibits = load_cilibits()
         
@@ -498,17 +549,31 @@ def get_cilibits():
         # Sort by timestamp (newest first)
         top_level_cilibits.sort(key=lambda x: x.get('timestamp', 0), reverse=True)
         
+        # Calculate pagination
+        total_items = len(top_level_cilibits)
+        total_pages = max(1, (total_items + limit - 1) // limit)  # Ceiling division
+        
+        # Ensure page is within bounds
+        page = max(1, min(page, total_pages))
+        
+        # Calculate slice indices
+        start_idx = (page - 1) * limit
+        end_idx = start_idx + limit
+        
+        # Get paginated results
+        paginated_cilibits = top_level_cilibits[start_idx:end_idx]
+        
         return jsonify({
             'success': True,
-            'topLevelCilibits': top_level_cilibits,
-            'cilibits': cilibits,
+            'topLevelCilibits': paginated_cilibits,
+            'cilibits': cilibits,  # Still return all cilibits for replies
             'pagination': {
-                'currentPage': 1,
-                'totalPages': 1,
-                'totalItems': len(top_level_cilibits),
-                'itemsPerPage': len(top_level_cilibits),
-                'hasNext': False,
-                'hasPrev': False
+                'currentPage': page,
+                'totalPages': total_pages,
+                'totalItems': total_items,
+                'itemsPerPage': limit,
+                'hasNext': page < total_pages,
+                'hasPrev': page > 1
             }
         })
     except Exception as e:
@@ -535,6 +600,7 @@ def create_cilibit():
             'image': data.get('image'),
             'isGif': data.get('isGif', False),
             'isCulubut': data.get('isCulubut', False),
+            'type': data.get('type'),
             'likes': [],
             'dislikes': []
         }
@@ -1067,6 +1133,16 @@ def serve(path):
     if static_folder_path is None:
         return "Static folder not configured", 404
 
+    # Allow login and static assets without auth
+    if path.startswith("static/") or path.startswith("uploads/"):
+        pass
+    elif path in ("login", "logout"):
+        return send_from_directory(static_folder_path, 'login.html')
+    else:
+        auth_redirect = require_login()
+        if auth_redirect:
+            return auth_redirect
+
     if path != "" and os.path.exists(os.path.join(static_folder_path, path)):
         return send_from_directory(static_folder_path, path)
     else:
@@ -1208,9 +1284,26 @@ def get_image(filename):
         print(f"Error serving image {filename}: {e}")
         return jsonify({'error': 'Image serving error'}), 500
 
+def _normalize_akademik_progress(progress_data):
+    """Normalize akademik progress data into a dict with enver/irem lists."""
+    if isinstance(progress_data, dict):
+        enver_entries = progress_data.get('enver') if isinstance(progress_data.get('enver'), list) else []
+        irem_entries = progress_data.get('irem') if isinstance(progress_data.get('irem'), list) else []
+    elif isinstance(progress_data, list):
+        enver_entries = progress_data
+        irem_entries = []
+    else:
+        enver_entries = []
+        irem_entries = []
+    
+    return {
+        'enver': enver_entries,
+        'irem': irem_entries
+    }
+
 @app.route('/api/akademik-progress', methods=['GET'])
 def get_akademik_progress():
-    """Get akademik manita progress entries"""
+    """Get akademik manita progress entries for both users"""
     try:
         progress_file = os.path.join(DATA_DIR, 'akademik_progress.json')
         
@@ -1220,34 +1313,444 @@ def get_akademik_progress():
         else:
             progress_data = []
         
+        normalized = _normalize_akademik_progress(progress_data)
+        
         return jsonify({
             'success': True,
-            'entries': progress_data
+            'lists': normalized,
+            # Backward-compatible field for older clients
+            'entries': normalized.get('enver', [])
         })
         
     except Exception as e:
         print(f"Error loading akademik progress: {e}")
         return jsonify({'success': False, 'error': 'Failed to load progress'}), 500
 
+# Akademik Calendar data file path
+AKADEMIK_CALENDAR_FILE = os.path.join(DATA_DIR, 'akademik_calendar.json')
+
+def load_akademik_calendar():
+    """Load akademik calendar from JSON file"""
+    return load_json_file(AKADEMIK_CALENDAR_FILE, {"events": [], "subscriptions": []})
+
+def save_akademik_calendar(data):
+    """Save akademik calendar to JSON file"""
+    return save_json_file(AKADEMIK_CALENDAR_FILE, data)
+
+@app.route('/api/akademik-calendar', methods=['GET'])
+def get_akademik_calendar():
+    """Get all akademik calendar events and subscriptions"""
+    try:
+        username = request.args.get('username')
+        if username not in ['enver', 'irem']:
+            return jsonify({'success': False, 'error': 'Unauthorized'}), 403
+
+        calendar_data = load_akademik_calendar()
+
+        return jsonify({
+            'success': True,
+            'events': calendar_data.get('events', []),
+            'subscriptions': calendar_data.get('subscriptions', [])
+        })
+
+    except Exception as e:
+        print(f"Error loading akademik calendar: {e}")
+        return jsonify({'success': False, 'error': 'Failed to load calendar'}), 500
+
+@app.route('/api/akademik-calendar/events', methods=['POST'])
+def create_calendar_event():
+    """Create a new calendar event"""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'success': False, 'error': 'No data provided'}), 400
+
+        username = data.get('username')
+        if username not in ['enver', 'irem']:
+            return jsonify({'success': False, 'error': 'Unauthorized'}), 403
+
+        title = data.get('title')
+        date = data.get('date')
+
+        if not title or not date:
+            return jsonify({'success': False, 'error': 'Title and date are required'}), 400
+
+        calendar_data = load_akademik_calendar()
+
+        new_event = {
+            'id': str(int(datetime.now().timestamp() * 1000)),
+            'title': title,
+            'date': date,
+            'time': data.get('time'),
+            'endTime': data.get('endTime'),
+            'allDay': data.get('allDay', True),
+            'status': data.get('status', 'busy'),
+            'createdBy': username,
+            'source': 'manual',
+            'subscriptionId': None,
+            'description': data.get('description', ''),
+            'createdAt': int(datetime.now().timestamp() * 1000)
+        }
+
+        calendar_data['events'].append(new_event)
+
+        if save_akademik_calendar(calendar_data):
+            return jsonify({'success': True, 'event': new_event})
+        else:
+            return jsonify({'success': False, 'error': 'Failed to save event'}), 500
+
+    except Exception as e:
+        print(f"Error creating calendar event: {e}")
+        return jsonify({'success': False, 'error': 'Failed to create event'}), 500
+
+@app.route('/api/akademik-calendar/events/<event_id>', methods=['PUT'])
+def update_calendar_event(event_id):
+    """Update a calendar event"""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'success': False, 'error': 'No data provided'}), 400
+
+        username = data.get('username')
+        if username not in ['enver', 'irem']:
+            return jsonify({'success': False, 'error': 'Unauthorized'}), 403
+
+        calendar_data = load_akademik_calendar()
+
+        event_index = None
+        for i, event in enumerate(calendar_data['events']):
+            if event['id'] == event_id:
+                # Only allow editing own events or manual events
+                if event['createdBy'] != username and event['source'] != 'manual':
+                    return jsonify({'success': False, 'error': 'Cannot edit this event'}), 403
+                event_index = i
+                break
+
+        if event_index is None:
+            return jsonify({'success': False, 'error': 'Event not found'}), 404
+
+        event = calendar_data['events'][event_index]
+
+        # Update fields
+        if 'title' in data:
+            event['title'] = data['title']
+        if 'date' in data:
+            event['date'] = data['date']
+        if 'time' in data:
+            event['time'] = data['time']
+        if 'endTime' in data:
+            event['endTime'] = data['endTime']
+        if 'allDay' in data:
+            event['allDay'] = data['allDay']
+        if 'status' in data:
+            event['status'] = data['status']
+        if 'description' in data:
+            event['description'] = data['description']
+
+        event['updatedAt'] = int(datetime.now().timestamp() * 1000)
+
+        if save_akademik_calendar(calendar_data):
+            return jsonify({'success': True, 'event': event})
+        else:
+            return jsonify({'success': False, 'error': 'Failed to update event'}), 500
+
+    except Exception as e:
+        print(f"Error updating calendar event: {e}")
+        return jsonify({'success': False, 'error': 'Failed to update event'}), 500
+
+@app.route('/api/akademik-calendar/events/<event_id>', methods=['DELETE'])
+def delete_calendar_event(event_id):
+    """Delete a calendar event"""
+    try:
+        data = request.get_json()
+        username = data.get('username') if data else None
+
+        if username not in ['enver', 'irem']:
+            return jsonify({'success': False, 'error': 'Unauthorized'}), 403
+
+        calendar_data = load_akademik_calendar()
+
+        event_index = None
+        for i, event in enumerate(calendar_data['events']):
+            if event['id'] == event_id:
+                # Allow deleting own events only (manual events)
+                if event['createdBy'] != username and event['source'] == 'manual':
+                    return jsonify({'success': False, 'error': 'Cannot delete this event'}), 403
+                event_index = i
+                break
+
+        if event_index is None:
+            return jsonify({'success': False, 'error': 'Event not found'}), 404
+
+        calendar_data['events'].pop(event_index)
+
+        if save_akademik_calendar(calendar_data):
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': False, 'error': 'Failed to delete event'}), 500
+
+    except Exception as e:
+        print(f"Error deleting calendar event: {e}")
+        return jsonify({'success': False, 'error': 'Failed to delete event'}), 500
+
+@app.route('/api/akademik-calendar/subscriptions', methods=['POST'])
+def add_calendar_subscription():
+    """Add an ICS calendar subscription"""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'success': False, 'error': 'No data provided'}), 400
+
+        username = data.get('username')
+        if username not in ['enver', 'irem']:
+            return jsonify({'success': False, 'error': 'Unauthorized'}), 403
+
+        url = data.get('url')
+        name = data.get('name')
+
+        if not url or not name:
+            return jsonify({'success': False, 'error': 'URL and name are required'}), 400
+
+        calendar_data = load_akademik_calendar()
+
+        # Check if URL already exists
+        for sub in calendar_data.get('subscriptions', []):
+            if sub['url'] == url:
+                return jsonify({'success': False, 'error': 'This calendar is already subscribed'}), 400
+
+        new_subscription = {
+            'id': f"sub_{int(datetime.now().timestamp() * 1000)}",
+            'url': url,
+            'name': name,
+            'addedBy': username,
+            'lastSynced': None,
+            'enabled': True,
+            'color': data.get('color', '#3B82F6')
+        }
+
+        if 'subscriptions' not in calendar_data:
+            calendar_data['subscriptions'] = []
+
+        calendar_data['subscriptions'].append(new_subscription)
+
+        if save_akademik_calendar(calendar_data):
+            # Try to sync immediately
+            sync_result = sync_ics_subscription(new_subscription['id'], calendar_data)
+            return jsonify({
+                'success': True,
+                'subscription': new_subscription,
+                'syncResult': sync_result
+            })
+        else:
+            return jsonify({'success': False, 'error': 'Failed to save subscription'}), 500
+
+    except Exception as e:
+        print(f"Error adding calendar subscription: {e}")
+        return jsonify({'success': False, 'error': 'Failed to add subscription'}), 500
+
+@app.route('/api/akademik-calendar/subscriptions/<subscription_id>', methods=['DELETE'])
+def delete_calendar_subscription(subscription_id):
+    """Delete an ICS calendar subscription and its events"""
+    try:
+        data = request.get_json()
+        username = data.get('username') if data else None
+
+        if username not in ['enver', 'irem']:
+            return jsonify({'success': False, 'error': 'Unauthorized'}), 403
+
+        calendar_data = load_akademik_calendar()
+
+        sub_index = None
+        for i, sub in enumerate(calendar_data.get('subscriptions', [])):
+            if sub['id'] == subscription_id:
+                if sub['addedBy'] != username:
+                    return jsonify({'success': False, 'error': 'Cannot delete this subscription'}), 403
+                sub_index = i
+                break
+
+        if sub_index is None:
+            return jsonify({'success': False, 'error': 'Subscription not found'}), 404
+
+        # Remove subscription
+        calendar_data['subscriptions'].pop(sub_index)
+
+        # Remove all events from this subscription
+        calendar_data['events'] = [
+            e for e in calendar_data.get('events', [])
+            if e.get('subscriptionId') != subscription_id
+        ]
+
+        if save_akademik_calendar(calendar_data):
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': False, 'error': 'Failed to delete subscription'}), 500
+
+    except Exception as e:
+        print(f"Error deleting calendar subscription: {e}")
+        return jsonify({'success': False, 'error': 'Failed to delete subscription'}), 500
+
+@app.route('/api/akademik-calendar/subscriptions/<subscription_id>/sync', methods=['POST'])
+def sync_calendar_subscription(subscription_id):
+    """Force sync an ICS calendar subscription"""
+    try:
+        data = request.get_json()
+        username = data.get('username') if data else None
+
+        if username not in ['enver', 'irem']:
+            return jsonify({'success': False, 'error': 'Unauthorized'}), 403
+
+        calendar_data = load_akademik_calendar()
+
+        result = sync_ics_subscription(subscription_id, calendar_data)
+
+        if result.get('success'):
+            return jsonify(result)
+        else:
+            return jsonify(result), 500
+
+    except Exception as e:
+        print(f"Error syncing calendar subscription: {e}")
+        return jsonify({'success': False, 'error': 'Failed to sync subscription'}), 500
+
+def sync_ics_subscription(subscription_id, calendar_data=None):
+    """Sync events from an ICS subscription"""
+    try:
+        import requests
+        from icalendar import Calendar as ICalendar
+
+        if calendar_data is None:
+            calendar_data = load_akademik_calendar()
+
+        # Find subscription
+        subscription = None
+        for sub in calendar_data.get('subscriptions', []):
+            if sub['id'] == subscription_id:
+                subscription = sub
+                break
+
+        if not subscription:
+            return {'success': False, 'error': 'Subscription not found'}
+
+        # Fetch ICS file
+        try:
+            response = requests.get(subscription['url'], timeout=30)
+            response.raise_for_status()
+        except Exception as e:
+            return {'success': False, 'error': f'Failed to fetch ICS: {str(e)}'}
+
+        # Parse ICS
+        try:
+            cal = ICalendar.from_ical(response.content)
+        except Exception as e:
+            return {'success': False, 'error': f'Failed to parse ICS: {str(e)}'}
+
+        # Remove old events from this subscription
+        calendar_data['events'] = [
+            e for e in calendar_data.get('events', [])
+            if e.get('subscriptionId') != subscription_id
+        ]
+
+        # Add new events
+        events_added = 0
+        for component in cal.walk():
+            if component.name == 'VEVENT':
+                try:
+                    dtstart = component.get('dtstart')
+                    dtend = component.get('dtend')
+                    summary = str(component.get('summary', 'Untitled'))
+                    description = str(component.get('description', ''))
+                    uid = str(component.get('uid', ''))
+
+                    if dtstart:
+                        dt = dtstart.dt
+
+                        # Determine if all-day event
+                        all_day = not hasattr(dt, 'hour')
+
+                        if all_day:
+                            date_str = dt.strftime('%Y-%m-%d')
+                            time_str = None
+                            end_time_str = None
+                        else:
+                            date_str = dt.strftime('%Y-%m-%d')
+                            time_str = dt.strftime('%H:%M')
+                            if dtend:
+                                end_time_str = dtend.dt.strftime('%H:%M')
+                            else:
+                                end_time_str = None
+
+                        new_event = {
+                            'id': f"ics_{subscription_id}_{uid}_{int(datetime.now().timestamp() * 1000)}",
+                            'title': summary,
+                            'date': date_str,
+                            'time': time_str,
+                            'endTime': end_time_str,
+                            'allDay': all_day,
+                            'status': 'busy',
+                            'createdBy': subscription['addedBy'],
+                            'source': 'ics',
+                            'subscriptionId': subscription_id,
+                            'description': description[:500] if description else '',
+                            'createdAt': int(datetime.now().timestamp() * 1000)
+                        }
+
+                        calendar_data['events'].append(new_event)
+                        events_added += 1
+
+                except Exception as e:
+                    print(f"Error parsing event: {e}")
+                    continue
+
+        # Update sync timestamp
+        for sub in calendar_data['subscriptions']:
+            if sub['id'] == subscription_id:
+                sub['lastSynced'] = int(datetime.now().timestamp() * 1000)
+                break
+
+        if save_akademik_calendar(calendar_data):
+            return {'success': True, 'eventsAdded': events_added}
+        else:
+            return {'success': False, 'error': 'Failed to save synced events'}
+
+    except ImportError:
+        return {'success': False, 'error': 'icalendar library not installed'}
+    except Exception as e:
+        print(f"Error syncing ICS subscription: {e}")
+        return {'success': False, 'error': str(e)}
+
+
 @app.route('/api/akademik-progress', methods=['POST'])
 def update_akademik_progress():
-    """Update akademik manita progress entries (enver only)"""
+    """Update akademik manita progress entries (enver or irem only)"""
     try:
         data = request.get_json()
         if not data:
             return jsonify({'success': False, 'error': 'No data provided'}), 400
         
-        # Check if user is enver (basic auth check)
+        # Check if user is enver or irem (basic auth check)
         username = data.get('username')
-        if username != 'enver':
-            return jsonify({'success': False, 'error': 'Unauthorized - only enver can edit'}), 403
+        if username not in ['enver', 'irem']:
+            return jsonify({'success': False, 'error': 'Unauthorized - only enver or irem can edit'}), 403
         
         entries = data.get('entries', [])
+        if not isinstance(entries, list):
+            entries = []
+        
         progress_file = os.path.join(DATA_DIR, 'akademik_progress.json')
+        
+        # Load existing data and normalize
+        if os.path.exists(progress_file):
+            with open(progress_file, 'r', encoding='utf-8') as f:
+                existing_data = json.load(f)
+        else:
+            existing_data = []
+        
+        normalized = _normalize_akademik_progress(existing_data)
+        normalized[username] = entries
         
         # Save entries to file
         with open(progress_file, 'w', encoding='utf-8') as f:
-            json.dump(entries, f, ensure_ascii=False, indent=2)
+            json.dump(normalized, f, ensure_ascii=False, indent=2)
         
         return jsonify({
             'success': True,
