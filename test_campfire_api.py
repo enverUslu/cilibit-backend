@@ -5,6 +5,10 @@ import tempfile
 import unittest
 from unittest import mock
 
+os.environ.setdefault('CILIBIT_ENVER_PASSWORD', 'toor')
+os.environ.setdefault('CILIBIT_IREM_PASSWORD', 'toor')
+os.environ.setdefault('SECRET_KEY', 'test-secret-key')
+
 from src import main
 
 
@@ -97,7 +101,7 @@ class CampfireApiTest(unittest.TestCase):
         self.assertEqual(event['from'], 'enver')
 
         other = main.app.test_client()
-        other.post('/api/session', json={'username': 'irem', 'password': 'triceratops1905'})
+        other.post('/api/session', json={'username': 'irem', 'password': 'toor'})
         received = other.get('/api/campfire/events?after=0').get_json()['events']
         self.assertEqual(next(item for item in received if item['type'] == 'state')['seq'], event['seq'])
 
@@ -168,7 +172,7 @@ class CampfireApiTest(unittest.TestCase):
         self.assertEqual(themed.status_code, 400)
 
         other = main.app.test_client()
-        other.post('/api/session', json={'username': 'irem', 'password': 'triceratops1905'})
+        other.post('/api/session', json={'username': 'irem', 'password': 'toor'})
         events = other.get('/api/campfire/events?after=0').get_json()['events']
         self.assertEqual([event['type'] for event in events], ['shared'])
 
@@ -223,7 +227,7 @@ class CampfireApiTest(unittest.TestCase):
         }).get_json()['message']
 
         other = main.app.test_client()
-        other.post('/api/session', json={'username': 'irem', 'password': 'triceratops1905'})
+        other.post('/api/session', json={'username': 'irem', 'password': 'toor'})
         received = other.get(f"/api/chats/{chat['id']}/messages").get_json()['messages']
         self.assertTrue(received[0]['isRead'])
         self.assertEqual(other.post(f"/api/chats/{chat['id']}/mark-read").status_code, 200)
@@ -328,7 +332,7 @@ class CampfireApiTest(unittest.TestCase):
         self.assertEqual(created['episode'], 2)
 
         other = main.app.test_client()
-        other.post('/api/session', json={'username': 'irem', 'password': 'triceratops1905'})
+        other.post('/api/session', json={'username': 'irem', 'password': 'toor'})
         updated = other.patch(f"/api/tv/catalog/{created['id']}", json={'episode': 3, 'watchedEpisodes': {'1': [1, 2, 3]}}).get_json()['entry']
         self.assertEqual(updated['updatedBy'], 'irem')
         self.assertEqual(updated['episode'], 3)
@@ -355,7 +359,7 @@ class CampfireApiTest(unittest.TestCase):
         self.assertEqual(created['tags'], ['plan', 'museum'])
 
         other = main.app.test_client()
-        other.post('/api/session', json={'username': 'irem', 'password': 'triceratops1905'})
+        other.post('/api/session', json={'username': 'irem', 'password': 'toor'})
         notes = other.get('/api/notes').get_json()['notes']
         self.assertEqual(notes[0]['id'], created['id'])
 
