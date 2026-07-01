@@ -4,9 +4,7 @@ __pycache__/
 *$py.class
 *.so
 venv/
-.env
-.env.local
-.env.production
+.env*
 
 # IDEs
 .vscode/
@@ -14,13 +12,16 @@ venv/
 
 # OS
 .DS_Store
+._*
 Thumbs.db
 
 # Logs
 *.log
 
-# Database (keep data files for now)
-# src/data/
+# Live production data/uploads are backed up separately.
+src/data/
+src/static/uploads/
+src/database/
 
 # Temporary files
 *.tmp

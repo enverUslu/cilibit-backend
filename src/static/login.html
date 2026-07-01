@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: "Space Grotesk", sans-serif;
+            background: radial-gradient(circle at 15% 20%, rgba(15,118,110,0.16), transparent 40%),
+                        radial-gradient(circle at 80% 0%, rgba(245,158,11,0.18), transparent 40%),
+                        linear-gradient(120deg, #fdfbf7, #f2ede3 60%, #e9e2d4 100%);
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+        }
+        .card {
+            width: 100%;
+            max-width: 420px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 18px;
+            padding: 28px;
+            border: 1px solid rgba(228,221,208,0.9);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 20px;
+        }
+        label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #6b7280;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 6px;
+        }
+        input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid #e4ddd0;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+        button {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: none;
+            background: #0f766e;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(15,118,110,0.2);
+        }
+        .hint {
+            margin-top: 14px;
+            font-size: 12px;
+            color: #9a3412;
+            background: rgba(245,158,11,0.15);
+            padding: 10px 12px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <form class="card" method="POST" action="/login">
+        <h1>Admin Login</h1>
+        <div class="subtitle">Protected access required for the User API Console.</div>
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" required>
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" required>
+        <button type="submit">Sign In</button>
+        <div class="hint">Use the admin credentials provided.</div>
+    </form>
+</body>
+</html>

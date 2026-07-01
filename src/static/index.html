@@ -4,87 +4,253 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>backend</title>
+    <title>User API Console</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; margin: 20px; }
-        .section { margin-bottom: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
-        h2 { margin-top: 0; }
-        label { display: inline-block; width: 80px; margin-bottom: 5px; }
-        input[type="text"], input[type="email"], input[type="number"] { margin-bottom: 10px; padding: 5px; width: 200px; }
-        button { padding: 8px 15px; margin-right: 10px; cursor: pointer; }
-        pre { background-color: #f4f4f4; padding: 10px; border: 1px solid #ddd; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word; }
+        :root {
+            --ink-900: #171717;
+            --ink-700: #404040;
+            --ink-500: #6b7280;
+            --stone-50: #f9f6f1;
+            --stone-100: #f1ece3;
+            --stone-200: #e4ddd0;
+            --accent-600: #0f766e;
+            --accent-700: #115e59;
+            --rose-600: #e11d48;
+            --amber-500: #f59e0b;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: "Space Grotesk", sans-serif;
+            background: radial-gradient(circle at 10% 10%, rgba(15,118,110,0.12), transparent 40%),
+                        radial-gradient(circle at 80% 0%, rgba(245,158,11,0.12), transparent 40%),
+                        linear-gradient(120deg, #fdfbf7, #f2ede3 60%, #e9e2d4 100%);
+            color: var(--ink-900);
+            min-height: 100vh;
+            padding: 32px;
+        }
+        .shell {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        h1 {
+            font-size: 28px;
+            letter-spacing: -0.02em;
+        }
+        .subtitle {
+            color: var(--ink-500);
+            margin-top: 6px;
+            font-size: 14px;
+        }
+        .logout {
+            color: var(--ink-700);
+            font-weight: 600;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--stone-200);
+            background: #fff;
+            box-shadow: var(--shadow-sm);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 18px;
+        }
+        .card {
+            background: rgba(255,255,255,0.92);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--stone-200);
+            box-shadow: var(--shadow-sm);
+        }
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: 6px;
+        }
+        .card p {
+            color: var(--ink-500);
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+        label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--ink-500);
+            font-weight: 600;
+            display: block;
+            margin-bottom: 6px;
+        }
+        input {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--stone-200);
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        button {
+            border: none;
+            background: var(--accent-600);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: var(--shadow-sm);
+        }
+        button.secondary {
+            background: #fff;
+            color: var(--ink-700);
+            border: 1px solid var(--stone-200);
+        }
+        pre {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            overflow-x: auto;
+            min-height: 60px;
+            margin-top: 8px;
+            font-family: "IBM Plex Mono", monospace;
+        }
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+        }
+        .pill.warn { background: rgba(245,158,11,0.2); color: #b45309; }
+        .pill.ok { background: rgba(15,118,110,0.18); color: var(--accent-700); }
+        .notice {
+            margin: 12px 0 18px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: rgba(245,158,11,0.15);
+            color: #92400e;
+            font-weight: 600;
+        }
+        .row-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .mono {
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 12px;
+            color: var(--ink-500);
+        }
     </style>
 </head>
 <body>
-    <h1>User API Test</h1>
+    <div class="shell">
+        <header>
+            <div>
+                <h1>User API Console</h1>
+                <div class="subtitle">Safe UI for managing users. All actions are authenticated.</div>
+            </div>
+            <a class="logout" href="/logout">Log out</a>
+        </header>
 
-    <!-- Get All Users -->
-    <div class="section">
-        <h2>Get All Users (GET /users)</h2>
-        <button onclick="getUsers()">Get Users</button>
-        <pre id="get-users-result"></pre>
-    </div>
+        <div class="notice">
+            <span class="pill warn">Protected</span>
+            Auth is required. If you see 401 errors, refresh or re-login.
+        </div>
 
-    <!-- Create User -->
-    <div class="section">
-        <h2>Create User (POST /users)</h2>
-        <label for="create-username">Username:</label>
-        <input type="text" id="create-username" name="username"><br>
-        <label for="create-email">Email:</label>
-        <input type="email" id="create-email" name="email"><br>
-        <button onclick="createUser()">Create User</button>
-        <pre id="create-user-result"></pre>
-    </div>
+        <div class="grid">
+            <div class="card">
+                <h2>Get All Users</h2>
+                <p>GET <span class="mono">/users</span></p>
+                <div class="row-actions">
+                    <button onclick="getUsers()">Get Users</button>
+                </div>
+                <pre id="get-users-result"></pre>
+            </div>
 
-    <!-- Get Single User -->
-    <div class="section">
-        <h2>Get Single User (GET /users/&lt;id&gt;)</h2>
-        <label for="get-user-id">User ID:</label>
-        <input type="number" id="get-user-id" name="user_id"><br>
-        <button onclick="getUser()">Get User</button>
-        <pre id="get-user-result"></pre>
-    </div>
+            <div class="card">
+                <h2>Create User</h2>
+                <p>POST <span class="mono">/users</span></p>
+                <label for="create-username">Username</label>
+                <input type="text" id="create-username" name="username" placeholder="jane_doe">
+                <label for="create-email">Email</label>
+                <input type="email" id="create-email" name="email" placeholder="jane@example.com">
+                <div class="row-actions">
+                    <button onclick="createUser()">Create User</button>
+                </div>
+                <pre id="create-user-result"></pre>
+            </div>
 
-    <!-- Update User -->
-    <div class="section">
-        <h2>Update User (PUT /users/&lt;id&gt;)</h2>
-        <label for="update-user-id">User ID:</label>
-        <input type="number" id="update-user-id" name="user_id"><br>
-        <label for="update-username">New Username:</label>
-        <input type="text" id="update-username" name="username"><br>
-        <label for="update-email">New Email:</label>
-        <input type="email" id="update-email" name="email"><br>
-        <button onclick="updateUser()">Update User</button>
-        <pre id="update-user-result"></pre>
-    </div>
+            <div class="card">
+                <h2>Get Single User</h2>
+                <p>GET <span class="mono">/users/&lt;id&gt;</span></p>
+                <label for="get-user-id">User ID</label>
+                <input type="number" id="get-user-id" name="user_id" placeholder="1">
+                <div class="row-actions">
+                    <button class="secondary" onclick="getUser()">Get User</button>
+                </div>
+                <pre id="get-user-result"></pre>
+            </div>
 
-    <!-- Delete User -->
-    <div class="section">
-        <h2>Delete User (DELETE /users/&lt;id&gt;)</h2>
-        <label for="delete-user-id">User ID:</label>
-        <input type="number" id="delete-user-id" name="user_id"><br>
-        <button onclick="deleteUser()">Delete User</button>
-        <pre id="delete-user-result"></pre>
+            <div class="card">
+                <h2>Update User</h2>
+                <p>PUT <span class="mono">/users/&lt;id&gt;</span></p>
+                <label for="update-user-id">User ID</label>
+                <input type="number" id="update-user-id" name="user_id" placeholder="1">
+                <label for="update-username">New Username</label>
+                <input type="text" id="update-username" name="username" placeholder="new_name">
+                <label for="update-email">New Email</label>
+                <input type="email" id="update-email" name="email" placeholder="new@email.com">
+                <div class="row-actions">
+                    <button onclick="updateUser()">Update User</button>
+                </div>
+                <pre id="update-user-result"></pre>
+            </div>
+
+            <div class="card">
+                <h2>Delete User</h2>
+                <p>DELETE <span class="mono">/users/&lt;id&gt;</span></p>
+                <label for="delete-user-id">User ID</label>
+                <input type="number" id="delete-user-id" name="user_id" placeholder="1">
+                <div class="row-actions">
+                    <button onclick="deleteUser()" style="background: var(--rose-600);">Delete User</button>
+                </div>
+                <pre id="delete-user-result"></pre>
+            </div>
+        </div>
     </div>
 
     <script>
         const API_BASE_URL = '/api/users';
 
-        // Helper function to display results
         function displayResult(elementId, data) {
             document.getElementById(elementId).textContent = JSON.stringify(data, null, 2);
         }
 
-        // Helper function to display errors
         function displayError(elementId, error) {
             document.getElementById(elementId).textContent = `Error: ${error.message || error}`;
         }
 
-        // GET /users
         async function getUsers() {
             const resultElementId = 'get-users-result';
             try {
                 const response = await fetch(API_BASE_URL);
+                if (response.status === 401) throw new Error('Unauthorized. Please log in.');
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
                 displayResult(resultElementId, data);
@@ -93,11 +259,10 @@
             }
         }
 
-        // POST /users
         async function createUser() {
             const resultElementId = 'create-user-result';
-            const username = document.getElementById('create-username').value;
-            const email = document.getElementById('create-email').value;
+            const username = document.getElementById('create-username').value.trim();
+            const email = document.getElementById('create-email').value.trim();
             if (!username || !email) {
                 displayError(resultElementId, 'Username and email cannot be empty');
                 return;
@@ -108,10 +273,10 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ username, email })
                 });
+                if (response.status === 401) throw new Error('Unauthorized. Please log in.');
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.message || `HTTP error! status: ${response.status}`);
                 displayResult(resultElementId, data);
-                // 清空输入框
                 document.getElementById('create-username').value = '';
                 document.getElementById('create-email').value = '';
             } catch (error) {
@@ -119,7 +284,6 @@
             }
         }
 
-        // GET /users/<id>
         async function getUser() {
             const resultElementId = 'get-user-result';
             const userId = document.getElementById('get-user-id').value;
@@ -129,7 +293,8 @@
             }
             try {
                 const response = await fetch(`${API_BASE_URL}/${userId}`);
-                 if (response.status === 404) throw new Error('User not found');
+                if (response.status === 401) throw new Error('Unauthorized. Please log in.');
+                if (response.status === 404) throw new Error('User not found');
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
                 displayResult(resultElementId, data);
@@ -138,12 +303,11 @@
             }
         }
 
-        // PUT /users/<id>
         async function updateUser() {
             const resultElementId = 'update-user-result';
             const userId = document.getElementById('update-user-id').value;
-            const username = document.getElementById('update-username').value;
-            const email = document.getElementById('update-email').value;
+            const username = document.getElementById('update-username').value.trim();
+            const email = document.getElementById('update-email').value.trim();
             if (!userId) {
                 displayError(resultElementId, 'User ID cannot be empty');
                 return;
@@ -152,8 +316,8 @@
             if (username) updateData.username = username;
             if (email) updateData.email = email;
             if (Object.keys(updateData).length === 0) {
-                 displayError(resultElementId, 'Please enter a username or email to update');
-                 return;
+                displayError(resultElementId, 'Please enter a username or email to update');
+                return;
             }
 
             try {
@@ -162,11 +326,11 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(updateData)
                 });
+                if (response.status === 401) throw new Error('Unauthorized. Please log in.');
                 if (response.status === 404) throw new Error('User not found');
                 const data = await response.json();
-                 if (!response.ok) throw new Error(data.message || `HTTP error! status: ${response.status}`);
+                if (!response.ok) throw new Error(data.message || `HTTP error! status: ${response.status}`);
                 displayResult(resultElementId, data);
-                 // Clear input fields
                 document.getElementById('update-username').value = '';
                 document.getElementById('update-email').value = '';
             } catch (error) {
@@ -174,7 +338,6 @@
             }
         }
 
-        // DELETE /users/<id>
         async function deleteUser() {
             const resultElementId = 'delete-user-result';
             const userId = document.getElementById('delete-user-id').value;
@@ -182,21 +345,20 @@
                 displayError(resultElementId, 'User ID cannot be empty');
                 return;
             }
+            if (!confirm(`Delete user ${userId}?`)) {
+                return;
+            }
             try {
-                const response = await fetch(`${API_BASE_URL}/${userId}`, {
-                    method: 'DELETE'
-                });
+                const response = await fetch(`${API_BASE_URL}/${userId}`, { method: 'DELETE' });
+                if (response.status === 401) throw new Error('Unauthorized. Please log in.');
                 if (response.status === 404) throw new Error('User not found');
-                if (!response.ok && response.status !== 204) throw new Error(`HTTP error! status: ${response.status}`); // Allow 204
-                // 204 No Content indicates success
+                if (!response.ok && response.status !== 204) throw new Error(`HTTP error! status: ${response.status}`);
                 if (response.status === 204) {
-                     displayResult(resultElementId, { message: `User ID ${userId} has been successfully deleted` });
+                    displayResult(resultElementId, { message: `User ID ${userId} deleted` });
                 } else {
-                     // Try to read potential error message even on success-like status if not 204
-                     const data = await response.text();
-                     displayResult(resultElementId, data || { message: `Deletion successful, status code: ${response.status}` });
+                    const data = await response.text();
+                    displayResult(resultElementId, data || { message: `Deletion successful, status code: ${response.status}` });
                 }
-                 // Clear input field
                 document.getElementById('delete-user-id').value = '';
             } catch (error) {
                 displayError(resultElementId, error);
