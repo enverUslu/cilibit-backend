@@ -519,8 +519,8 @@ def campfire_state(username):
     if username not in CILIBIT_USERS:
         return jsonify({'success': False, 'error': 'Unknown user'}), 404
 
-    states = load_campfire_states()
     if request.method == 'GET':
+        states = load_campfire_states()
         return jsonify({
             'success': True,
             'username': username,
@@ -538,9 +538,11 @@ def campfire_state(username):
     if json_size(state) > CAMPFIRE_STATE_MAX_BYTES:
         return jsonify({'success': False, 'error': 'State is too large'}), 413
 
-    states[username] = state
-    if not save_json_file(CAMPFIRE_STATE_FILE, states):
-        return jsonify({'success': False, 'error': 'Failed to save state'}), 500
+    with CAMPFIRE_FILE_LOCK:
+        states = load_campfire_states()
+        states[username] = state
+        if not save_json_file(CAMPFIRE_STATE_FILE, states):
+            return jsonify({'success': False, 'error': 'Failed to save state'}), 500
     return jsonify({'success': True, 'username': username, 'state': state})
 
 @app.route('/api/campfire/assets', methods=['GET', 'PUT'])
