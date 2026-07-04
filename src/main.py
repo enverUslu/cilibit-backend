@@ -239,6 +239,51 @@ def _spotify_return_url(candidate):
         pass
     return configured
 
+def _spotify_state_records():
+    records = session.get('spotify_oauth_states')
+    return records if isinstance(records, dict) else {}
+
+def _remember_spotify_state(state, actor, return_url, verifier):
+    records = _spotify_state_records()
+    now = int(time.time())
+    records = {
+        key: value for key, value in records.items()
+        if isinstance(value, dict) and now - int(value.get('created_at', 0)) < 900
+    }
+    records[state] = {
+        'actor': actor,
+        'return_url': return_url,
+        'verifier': verifier or '',
+        'created_at': now,
+    }
+    # Keep a few outstanding attempts so double taps or two tabs do not break the first callback.
+    if len(records) > 5:
+        newest = sorted(records.items(), key=lambda item: int(item[1].get('created_at', 0)), reverse=True)[:5]
+        records = dict(newest)
+    session['spotify_oauth_states'] = records
+    session.modified = True
+
+def _consume_spotify_state(state, actor):
+    records = _spotify_state_records()
+    record = records.pop(state, None)
+    if record:
+        session['spotify_oauth_states'] = records
+        session.modified = True
+        if record.get('actor') != actor:
+            return None
+        return record
+
+    # Legacy single-state fallback for sessions that started OAuth before this upgrade.
+    expected_state = session.get('spotify_oauth_state', '')
+    if state and expected_state and secrets.compare_digest(state, expected_state):
+        session.pop('spotify_oauth_state', None)
+        return {
+            'actor': actor,
+            'return_url': session.pop('spotify_return_url', None),
+            'verifier': session.pop('spotify_code_verifier', ''),
+        }
+    return None
+
 def _spotify_token_request(payload, use_pkce=False):
     config = _spotify_config()
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
@@ -423,8 +468,8 @@ def spotify_connect():
         return jsonify({'success': False, 'error': 'Spotify is not configured'}), 503
 
     state = secrets.token_urlsafe(24)
-    session['spotify_oauth_state'] = state
-    session['spotify_return_url'] = _spotify_return_url(request.args.get('return_to'))
+    return_url = _spotify_return_url(request.args.get('return_to'))
+    verifier = ''
     params = {
         'client_id': config['client_id'],
         'response_type': 'code',
@@ -438,10 +483,8 @@ def spotify_connect():
         challenge = base64.urlsafe_b64encode(
             hashlib.sha256(verifier.encode('ascii')).digest()
         ).rstrip(b'=').decode('ascii')
-        session['spotify_code_verifier'] = verifier
         params.update({'code_challenge_method': 'S256', 'code_challenge': challenge})
-    else:
-        session.pop('spotify_code_verifier', None)
+    _remember_spotify_state(state, actor, return_url, verifier)
     return redirect(f"https://accounts.spotify.com/authorize?{urllib.parse.urlencode(params)}")
 
 @app.route('/api/spotify/callback', methods=['GET'])
@@ -451,10 +494,10 @@ def spotify_callback():
     if error:
         return error
     state = request.args.get('state', '')
-    expected_state = session.pop('spotify_oauth_state', '')
-    return_url = _spotify_return_url(session.pop('spotify_return_url', None))
-    if not state or not secrets.compare_digest(state, expected_state):
+    state_record = _consume_spotify_state(state, actor)
+    if not state_record:
         return jsonify({'success': False, 'error': 'Invalid Spotify authorization state'}), 400
+    return_url = _spotify_return_url(state_record.get('return_url'))
     if request.args.get('error'):
         return redirect(return_url)
 
@@ -462,7 +505,7 @@ def spotify_callback():
     if not code:
         return jsonify({'success': False, 'error': 'Spotify authorization code is missing'}), 400
     config = _spotify_config()
-    verifier = session.pop('spotify_code_verifier', '')
+    verifier = state_record.get('verifier', '')
     token_payload = {
         'grant_type': 'authorization_code',
         'code': code,

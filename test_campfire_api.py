@@ -3,6 +3,7 @@ import io
 import os
 import tempfile
 import unittest
+import urllib.parse
 from unittest import mock
 
 os.environ.setdefault('CILIBIT_ENVER_PASSWORD', 'toor')
@@ -277,6 +278,41 @@ class CampfireApiTest(unittest.TestCase):
         self.assertIn('accounts.spotify.com/authorize', response.location)
         self.assertIn('api.example.test%2Fapi%2Fspotify%2Fcallback', response.location)
         self.assertIn('code_challenge_method=S256', response.location)
+
+    def test_spotify_callback_accepts_multiple_outstanding_states(self):
+        self.login()
+        env = {
+            'SPOTIFY_CLIENT_ID': 'client',
+            'SPOTIFY_CLIENT_SECRET': '',
+            'SPOTIFY_REDIRECT_URI': 'https://api.example.test/api/spotify/callback',
+        }
+        with mock.patch.dict(os.environ, env):
+            first = self.client.get('/api/spotify/connect?return_to=https://enverelectronics.com/cilibit/campfire.html')
+            second = self.client.get('/api/spotify/connect?return_to=https://enverelectronics.com/cilibit/feed.html')
+            first_state = urllib.parse.parse_qs(urllib.parse.urlparse(first.location).query)['state'][0]
+            second_state = urllib.parse.parse_qs(urllib.parse.urlparse(second.location).query)['state'][0]
+            with mock.patch.object(main, '_spotify_token_request', return_value={
+                'access_token': 'first-token',
+                'refresh_token': 'first-refresh',
+                'expires_in': 3600,
+            }):
+                first_callback = self.client.get(
+                    f'/api/spotify/callback?code=first-code&state={urllib.parse.quote(first_state)}'
+                )
+            self.assertEqual(first_callback.status_code, 302)
+            self.assertIn('/cilibit/campfire.html', first_callback.location)
+
+            with mock.patch.object(main, '_spotify_token_request', return_value={
+                'access_token': 'second-token',
+                'refresh_token': 'second-refresh',
+                'expires_in': 3600,
+            }):
+                second_callback = self.client.get(
+                    f'/api/spotify/callback?code=second-code&state={urllib.parse.quote(second_state)}'
+                )
+            self.assertEqual(second_callback.status_code, 302)
+            self.assertIn('/cilibit/feed.html', second_callback.location)
+            self.assertEqual(main.load_json_file(main.SPOTIFY_TOKENS_FILE, {})['enver']['access_token'], 'second-token')
 
     def test_tickets_pdf_lifecycle_is_authenticated(self):
         self.assertEqual(self.client.get('/api/tickets').status_code, 401)
